@@ -1,0 +1,23 @@
+.gm-style .gm-style-iw-t {
+  position: absolute;
+  width: 100%;
+  top: -52px;
+}
+
+.search {
+  position: absolute;
+  margin: auto;
+  width: 100%;
+  max-width: 65vw;
+  z-index: 10;
+}
+
+.search input {
+  padding: 0.5rem;
+  font-size: 1.5rem;
+  width: 100%;
+}
+
+li {
+  list-style: none;
+}

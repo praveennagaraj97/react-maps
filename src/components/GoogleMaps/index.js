@@ -6,6 +6,9 @@ import {
   InfoWindow,
 } from "@react-google-maps/api";
 
+import "./style.css";
+import SearchLocation from "./SearchLocation";
+
 const libraries = ["places"];
 const mapContainerStyle = {
   width: "80vw",
@@ -21,6 +24,8 @@ const options = {
  */
 export default function GoogleMapsComponent() {
   const [coords, setCoors] = useState({ lat: 0, lng: 0 });
+  const [selectedCoord, setSelectedCoord] = useState(null);
+  const [selectedAddress, setSelectedAddress] = useState("");
 
   /**
    * @hook to initialize google map -
@@ -43,10 +48,12 @@ export default function GoogleMapsComponent() {
       navigator.geolocation.getCurrentPosition(
         (position) => {
           if (!isCancelled) {
-            setCoors({
+            const coordinates = {
               lat: position.coords.latitude,
               lng: position.coords.longitude,
-            });
+            };
+            setCoors(coordinates);
+            setSelectedCoord(coordinates);
           }
         },
         (err) => {
@@ -63,14 +70,26 @@ export default function GoogleMapsComponent() {
     };
   }, []);
 
+  if (loadError) return <p>Something went wrong</p>;
   if (!isLoaded) return <p>Loading ...</p>;
 
   return (
-    <div>
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        position: "relative",
+      }}
+    >
+      <SearchLocation
+        coords={coords}
+        setSearchLocation={setSelectedCoord}
+        setSelectedAddress={setSelectedAddress}
+      />
       <GoogleMap
         mapContainerStyle={mapContainerStyle}
         zoom={16}
-        center={coords}
+        center={selectedCoord || coords}
         options={options}
         onClick={(e) =>
           setCoors({
@@ -80,21 +99,32 @@ export default function GoogleMapsComponent() {
         }
       >
         <Marker
-          position={coords}
+          position={selectedCoord ? selectedCoord : coords}
           draggable={true}
           animation="BOUNCE"
           icon={{
             url:
-              "https://firebasestorage.googleapis.com/v0/b/lounshop.appspot.com/o/googleMapsMarker.png?alt=media&token=60476b6c-269f-42fe-a1b9-63f09fd5f6be",
+              "https://firebasestorage.googleapis.com/v0/b/lounshop.appspot.com/o/googleMapsMarker.webp?alt=media&token=e0a47a68-354c-43cf-895e-3ad97441225c",
             scaledSize: new window.google.maps.Size(40, 40),
           }}
-          onDragEnd={(e) =>
-            setCoors({
+          onDragStart={() => {
+            setSelectedCoord(null);
+          }}
+          onDragEnd={(e) => {
+            const coordinates = {
               lat: e.latLng.lat(),
               lng: e.latLng.lng(),
-            })
-          }
+            };
+
+            setSelectedCoord(coordinates);
+          }}
         ></Marker>
+
+        {selectedCoord && (
+          <InfoWindow position={selectedCoord} options={{}}>
+            <div>{!selectedAddress ? "You" : selectedAddress}</div>
+          </InfoWindow>
+        )}
       </GoogleMap>
     </div>
   );
