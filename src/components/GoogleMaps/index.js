@@ -83,7 +83,12 @@ export default function GoogleMapsComponent() {
           position={coords}
           draggable={true}
           animation="BOUNCE"
-          onDrag={(e) =>
+          icon={{
+            url:
+              "https://firebasestorage.googleapis.com/v0/b/lounshop.appspot.com/o/googleMapsMarker.png?alt=media&token=60476b6c-269f-42fe-a1b9-63f09fd5f6be",
+            scaledSize: new window.google.maps.Size(40, 40),
+          }}
+          onDragEnd={(e) =>
             setCoors({
               lat: e.latLng.lat(),
               lng: e.latLng.lng(),
