@@ -9,19 +9,27 @@ import {
 import "./style.css";
 import SearchLocation from "./SearchLocation";
 
+/**
+ * @add google-map-libraries
+ * @reason to specify libraries out of component is to avoid re-renders
+ */
 const libraries = ["places"];
+
+/**
+ * @default MAP_DISPLAY_STYLES
+ */
 const mapContainerStyle = {
   width: "80vw",
   height: "80vh",
 };
 
+/**
+ * @additional options passed to Google Maps
+ */
 const options = {
   disableDefaultUI: true,
 };
 
-/**
- * @reason to specify libraries out of component is to avoid re-renders
- */
 export default function GoogleMapsComponent() {
   const [coords, setCoors] = useState({ lat: 0, lng: 0 });
   const [selectedCoord, setSelectedCoord] = useState(null);

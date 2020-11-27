@@ -43,7 +43,7 @@ export default function SearchLocation({
 
   /**
    * @handle selected address
-   *
+   * @requires address/place_id
    */
   async function handleSelectedAddress(address) {
     setValue(address, false);
