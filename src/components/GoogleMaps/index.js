@@ -9,6 +9,11 @@ import {
 import "./style.css";
 import SearchLocation from "./SearchLocation";
 
+const MAP_KEY = prompt(`
+    Please enter google API key to test 
+    Note : we dont store your api key
+    `);
+
 /**
  * @add google-map-libraries
  * @reason to specify libraries out of component is to avoid re-renders
@@ -44,7 +49,7 @@ export default function GoogleMapsComponent() {
    * @url @returns url which will be added to html as script tag.
    */
   const { isLoaded, loadError } = useLoadScript({
-    googleMapsApiKey: process.env.REACT_APP_GMAPS,
+    googleMapsApiKey: MAP_KEY,
     libraries,
   });
 
@@ -97,6 +102,7 @@ export default function GoogleMapsComponent() {
           setSelectedAddress={setSelectedAddress}
           setZipCode={setPinCode}
           selectedCoords={selectedCoord}
+          MAP_KEY={MAP_KEY}
         />
         <GoogleMap
           mapContainerStyle={mapContainerStyle}

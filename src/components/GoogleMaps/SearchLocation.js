@@ -14,8 +14,6 @@ import usePlacesAutocomplete, {
 import "@reach/combobox/styles.css";
 import Geocode from "react-geocode";
 
-Geocode.setApiKey(process.env.REACT_APP_GMAPS);
-
 /**
  * @uses USE-PLACES-AUTOCOMPLETE
  * @how a React hook for Google Maps Places Autocomplete,
@@ -34,6 +32,7 @@ export default function SearchLocation({
   setSelectedAddress,
   setZipCode,
   selectedCoords,
+  MAP_KEY,
 }) {
   const {
     ready,
@@ -49,6 +48,8 @@ export default function SearchLocation({
   });
 
   useEffect(() => {
+    Geocode.setApiKey(MAP_KEY);
+
     if (selectedCoords) {
       const { lat, lng } = selectedCoords;
       Geocode.fromLatLng(lat, lng).then(
@@ -86,7 +87,7 @@ export default function SearchLocation({
         }
       );
     }
-  }, [coords, selectedCoords, setSelectedAddress, setZipCode]);
+  }, [coords, selectedCoords, setSelectedAddress, setZipCode, MAP_KEY]);
 
   /**
    * @handle selected address
