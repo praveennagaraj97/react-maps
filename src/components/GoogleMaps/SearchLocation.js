@@ -1,15 +1,20 @@
 import {
   Combobox,
   ComboboxInput,
+  ComboboxList,
   ComboboxOption,
   ComboboxPopover,
 } from "@reach/combobox";
-import React from "react";
+import React, { useEffect } from "react";
 import usePlacesAutocomplete, {
   getGeocode,
   getLatLng,
+  getZipCode,
 } from "use-places-autocomplete";
 import "@reach/combobox/styles.css";
+import Geocode from "react-geocode";
+
+Geocode.setApiKey(process.env.REACT_APP_GMAPS);
 
 /**
  * @uses USE-PLACES-AUTOCOMPLETE
@@ -27,6 +32,8 @@ export default function SearchLocation({
   coords,
   setSearchLocation,
   setSelectedAddress,
+  setZipCode,
+  selectedCoords,
 }) {
   const {
     ready,
@@ -41,6 +48,46 @@ export default function SearchLocation({
     },
   });
 
+  useEffect(() => {
+    if (selectedCoords) {
+      const { lat, lng } = selectedCoords;
+      Geocode.fromLatLng(lat, lng).then(
+        (response) => {
+          const address = response.results[0].formatted_address;
+          setSelectedAddress(address);
+          getZipCode(response.results[0])
+            .then((zipCode) => {
+              setZipCode(zipCode || "");
+            })
+            .catch((e) => {
+              console.log(e);
+            });
+        },
+        (error) => {
+          console.error(error);
+        }
+      );
+    } else {
+      const { lat, lng } = coords;
+      Geocode.fromLatLng(lat, lng).then(
+        (response) => {
+          const address = response.results[0].formatted_address;
+          setSelectedAddress(address);
+          getZipCode(response.results[0])
+            .then((zipCode) => {
+              setZipCode(zipCode || "");
+            })
+            .catch((e) => {
+              console.log(e);
+            });
+        },
+        (error) => {
+          console.error(error);
+        }
+      );
+    }
+  }, [coords, selectedCoords, setSelectedAddress, setZipCode]);
+
   /**
    * @handle selected address
    * @requires address/place_id
@@ -54,7 +101,9 @@ export default function SearchLocation({
     try {
       const results = await getGeocode({ address });
       const { lat, lng } = await getLatLng(results[0]);
+      const zipCode = await getZipCode(results[0]);
 
+      setZipCode(zipCode || "");
       setSearchLocation({ lat, lng });
     } catch (e) {
       console.log(e);
@@ -74,10 +123,12 @@ export default function SearchLocation({
         placeholder="Enter location"
       />
       <ComboboxPopover>
-        {status === "OK" &&
-          data.map(({ place_id, description }) => {
-            return <ComboboxOption key={place_id} value={description} />;
-          })}
+        <ComboboxList>
+          {status === "OK" &&
+            data.map(({ place_id, description }) => {
+              return <ComboboxOption key={place_id} value={description} />;
+            })}
+        </ComboboxList>
       </ComboboxPopover>
     </Combobox>
   );
